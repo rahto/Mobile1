@@ -6,6 +6,7 @@ import {
   TouchableOpacity, SafeAreaView, StatusBar, Dimensions 
 } from 'react-native';
 import { MaterialIcons, Ionicons, Feather } from '@expo/vector-icons';
+import MapComponent from "./MapComponent";
 
 const { width } = Dimensions.get('window');
 
@@ -158,30 +159,56 @@ const FeedView = () => {
 
 
 // --- COMPONENTE: TELA DE MAPA ---
-const MapaView = () => (
-  <View style={styles.mapContainer}>
-    <View style={styles.legendRow}>
-      <View style={styles.legendItem}>
-        <Ionicons name="location" size={16} color="#0A84D6" />
-        <Text style={styles.legendTxt}>Pet Localizado</Text>
-      </View>
-      <View style={styles.legendItem}>
-        <Ionicons name="location" size={16} color="#FF7675" />
-        <Text style={styles.legendTxt}>Pet Perdido</Text>
-      </View>
-      <View style={styles.legendItem}>
-        <Ionicons name="location" size={16} color="#FFBD2E" />
-        <Text style={styles.legendTxt}>ONGs</Text>
-      </View>
+const MapaView = () => {
+  const markers = [
+    {
+      id: 1,
+      title: "Cachorro encontrado",
+      description: "Golden encontrado no centro",
+      coordinate: { latitude: -4.9692, longitude: -39.0558 },
+      type: "encontrado",
+    },
+    {
+      id: 2,
+      title: "Gato perdido",
+      description: "Gato siamês desaparecido há 2 dias",
+      coordinate: { latitude: -4.9700, longitude: -39.0570 },
+      type: "perdido",
+    },
+    {
+      id: 3,
+      title: "ONG Amigo Animal",
+      description: "Abrigo para animais abandonados",
+      coordinate: { latitude: -4.9680, longitude: -39.0540 },
+      type: "ong",
+    },
+  ];
+
+  const handleMarkerPress = (marker) => {
+    Alert.alert(
+      marker.title,
+      marker.description,
+      [
+        { text: 'Fechar', style: 'cancel' },
+        { text: 'Ver no mapa', onPress: () => {
+          // Navegar para tela de detalhes ou focar no marcador
+          Alert.alert('Informação', `Localização: ${marker.coordinate.latitude.toFixed(4)}, ${marker.coordinate.longitude.toFixed(4)}`);
+        }}
+      ]
+    );
+  };
+
+  return (
+    <View style={styles.mapContainer}>
+      <MapComponent
+        markers={markers}
+        onMarkerPress={handleMarkerPress}
+        showUserLocation={true}
+        heightPercentage={0.8}
+      />
     </View>
-    <View style={styles.mapBorder}>
-      <Image source={{ uri: 'https://i.imgur.com/8uO0CgV.png' }} style={styles.mapFull} />
-      <TouchableOpacity style={styles.mapEyeBtn}>
-        <Ionicons name="eye-outline" size={28} color="white" />
-      </TouchableOpacity>
-    </View>
-  </View>
-);
+  );
+};
 
 // --- COMPONENTE: TELA DE GUIA ---
 const GuiaView = () => (

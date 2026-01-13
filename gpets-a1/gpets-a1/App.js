@@ -16,6 +16,7 @@ import AddPostPetLocalizadoScreen3 from './AddPostPetLocalizadoScreen3';
 import AddPostPetPerdidoScreen from './AddPostPetPerdidoScreen';
 import AddPostPetPerdidoScreen2 from './AddPostPetPerdidoScreen2';
 import AddPostPetPerdidoScreen3 from './AddPostPetPerdidoScreen3';
+import MapComponent from './MapComponent';
 
 // Dashboard principal
 import MainDashboard from "./MainDashboard";

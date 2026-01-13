@@ -1,29 +1,60 @@
 {
   "expo": {
-    "name": "gpets-a1",
-    "slug": "snack-26f5fa98-a3b5-4998-8224-3d6830d9f8a9",
+    "name": "GPETS",
+    "slug": "gpets",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "light",
-    "newArchEnabled": true,
     "splash": {
       "image": "./assets/splash-icon.png",
       "resizeMode": "contain",
-      "backgroundColor": "#ffffff"
+      "backgroundColor": "#6BCB77"
     },
+    "assetBundlePatterns": ["**/*"],
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "bundleIdentifier": "com.gpets.app",
+      "infoPlist": {
+        "NSLocationWhenInUseUsageDescription": "Este aplicativo precisa de sua localização para mostrar pets próximos no mapa.",
+        "NSLocationAlwaysAndWhenInUseUsageDescription": "Este aplicativo precisa de sua localização para mostrar pets próximos mesmo quando em segundo plano.",
+        "NSCameraUsageDescription": "Este aplicativo precisa acessar sua câmera para tirar fotos dos pets.",
+        "NSPhotoLibraryUsageDescription": "Este aplicativo precisa acessar sua galeria para selecionar fotos dos pets."
+      },
+      "config": {
+        "googleMapsApiKey": "SUA_CHAVE_API_GOOGLE_MAPS_IOS_AQUI"
+      }
     },
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
-        "backgroundColor": "#ffffff"
+        "backgroundColor": "#6BCB77"
       },
-      "edgeToEdgeEnabled": true
+      "permissions": [
+        "android.permission.ACCESS_COARSE_LOCATION",
+        "android.permission.ACCESS_FINE_LOCATION",
+        "android.permission.CAMERA",
+        "android.permission.READ_EXTERNAL_STORAGE",
+        "android.permission.WRITE_EXTERNAL_STORAGE"
+      ],
+      "config": {
+        "googleMaps": {
+          "apiKey": "SUA_CHAVE_API_GOOGLE_MAPS_ANDROID_AQUI"
+        }
+      },
+      "package": "com.gpets.app",
+      "versionCode": 1
     },
     "web": {
       "favicon": "./assets/favicon.png"
-    }
+    },
+    "plugins": [
+      [
+        "expo-location",
+        {
+          "locationAlwaysAndWhenInUsePermission": "Permitir que o GPETS use sua localização para mostrar pets próximos."
+        }
+      ]
+    ]
   }
 }

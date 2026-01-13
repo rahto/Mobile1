@@ -1,13 +1,42 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { 
   StyleSheet, View, Text, Image, 
-  TouchableOpacity, SafeAreaView, StatusBar, Dimensions 
+  TouchableOpacity, SafeAreaView, StatusBar, Alert 
 } from 'react-native';
 import { Ionicons, MaterialIcons } from '@expo/vector-icons';
-// Nota: Se for usar um mapa real, você precisará instalar o 'react-native-maps'
-// Por enquanto, usaremos uma imagem para representar o mapa conforme seu design.
+import MapComponent from './MapComponent'; // Importe o componente
 
 export default function AddPostPetLocalizadoScreen3({ navigation }) {
+  const [selectedLocation, setSelectedLocation] = useState(null);
+
+  const handleLocationSelect = (coordinate) => {
+    setSelectedLocation(coordinate);
+    console.log('Localização selecionada:', coordinate);
+  };
+
+  const handleCreatePost = () => {
+    if (!selectedLocation) {
+      Alert.alert('Atenção', 'Por favor, selecione uma localização no mapa.');
+      return;
+    }
+
+    Alert.alert(
+      'Confirmação',
+      `Deseja criar o post na localização selecionada?\nLat: ${selectedLocation.latitude.toFixed(4)}\nLon: ${selectedLocation.longitude.toFixed(4)}`,
+      [
+        { text: 'Cancelar', style: 'cancel' },
+        { 
+          text: 'Criar Post', 
+          onPress: () => {
+            // Aqui você enviaria os dados para a API
+            Alert.alert('Sucesso', 'Post criado com sucesso!');
+            navigation.navigate('MainDashboard');
+          }
+        }
+      ]
+    );
+  };
+
   return (
     <SafeAreaView style={styles.container}>
       <StatusBar barStyle="dark-content" />
@@ -27,30 +56,49 @@ export default function AddPostPetLocalizadoScreen3({ navigation }) {
           <MaterialIcons name="arrow-back-ios" size={20} color="#333" />
         </TouchableOpacity>
         <Text style={styles.headerTitle}>Pet localizado</Text>
-        <TouchableOpacity style={styles.trashBtn}>
+        <TouchableOpacity 
+          style={styles.trashBtn}
+          onPress={() => {
+            Alert.alert('Limpar', 'Deseja limpar todos os dados do formulário?', [
+              { text: 'Cancelar', style: 'cancel' },
+              { text: 'Limpar', onPress: () => setSelectedLocation(null) }
+            ]);
+          }}
+        >
           <Ionicons name="trash-outline" size={20} color="white" />
         </TouchableOpacity>
       </View>
 
-      {/* Container do Mapa */}
-      <View style={styles.mapWrapper}>
-        <View style={styles.mapContainer}>
-          {/* Aqui entraria o <MapView />. Por enquanto, uma representação: */}
-          <Image 
-            source={{ uri: 'https://i.stack.imgur.com/vH98r.png' }} // Exemplo de imagem de mapa
-            style={styles.mapPlaceholder}
-          />
-          
-          {/* Overlay de instrução no mapa */}
-          <View style={styles.mapOverlay}>
-            <Text style={styles.mapOverlayText}>
-              Indique a localização aproximada no mapa
-            </Text>
-          </View>
-        </View>
+      {/* Instruções */}
+      <View style={styles.instructions}>
+        <Ionicons name="information-circle" size={24} color="#0A84D6" />
+        <Text style={styles.instructionsText}>
+          Toque no mapa para marcar onde o pet foi localizado
+        </Text>
       </View>
 
-      {/* Footer: Voltar, Etapa 3/3 e Criar Post */}
+      {/* Componente de Mapa */}
+      <MapComponent
+        allowMarkerSelection={true}
+        onLocationSelect={handleLocationSelect}
+        selectedLocation={selectedLocation}
+        heightPercentage={0.6}
+      />
+
+      {/* Informações da localização selecionada */}
+      {selectedLocation && (
+        <View style={styles.locationInfo}>
+          <Text style={styles.locationTitle}>Localização selecionada:</Text>
+          <Text style={styles.locationCoords}>
+            Lat: {selectedLocation.latitude.toFixed(6)}
+          </Text>
+          <Text style={styles.locationCoords}>
+            Lon: {selectedLocation.longitude.toFixed(6)}
+          </Text>
+        </View>
+      )}
+
+      {/* Footer */}
       <View style={styles.footer}>
         <TouchableOpacity 
           style={styles.voltarBtn}
@@ -62,11 +110,12 @@ export default function AddPostPetLocalizadoScreen3({ navigation }) {
         <Text style={styles.stepIndicator}>3/3</Text>
 
         <TouchableOpacity 
-          style={styles.criarPostBtn}
-          onPress={() => {
-            alert('Post criado com sucesso!');
-            navigation.navigate('MainDashboard');
-          }}
+          style={[
+            styles.criarPostBtn, 
+            !selectedLocation && { backgroundColor: '#CCCCCC' }
+          ]}
+          onPress={handleCreatePost}
+          disabled={!selectedLocation}
         >
           <Text style={styles.btnText}>Criar post</Text>
         </TouchableOpacity>
@@ -83,7 +132,7 @@ const styles = StyleSheet.create({
   logoContainer: {
     alignItems: 'center',
     marginTop: 40,
-    height: 100,
+    height: 80,
   },
   logoImage: {
     width: 160,
@@ -99,6 +148,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
     borderRadius: 45,
     elevation: 3,
+    marginTop: 10,
   },
   headerTitle: {
     fontSize: 18,
@@ -110,49 +160,49 @@ const styles = StyleSheet.create({
     padding: 8,
     borderRadius: 25,
   },
-  mapWrapper: {
-    flex: 1,
-    paddingHorizontal: 25,
-    marginTop: 40,
-    marginBottom: 140, // Espaço para o footer
-  },
-  mapContainer: {
-    flex: 1,
-    borderRadius: 30,
-    overflow: 'hidden',
-    backgroundColor: '#ddd',
-    borderWidth: 1,
-    borderColor: '#ccc',
-  },
-  mapPlaceholder: {
-    width: '100%',
-    height: '100%',
-  },
-  mapOverlay: {
-    position: 'absolute',
-    bottom: 40,
-    left: 20,
-    right: 20,
-    backgroundColor: 'rgba(255, 255, 255, 0.7)',
-    paddingVertical: 20,
-    paddingHorizontal: 15,
-    borderRadius: 30,
+  instructions: {
+    flexDirection: 'row',
     alignItems: 'center',
+    backgroundColor: 'rgba(10, 132, 214, 0.1)',
+    marginHorizontal: 25,
+    marginTop: 20,
+    padding: 15,
+    borderRadius: 15,
+    borderWidth: 1,
+    borderColor: 'rgba(10, 132, 214, 0.3)',
   },
-  mapOverlayText: {
-    color: '#333',
+  instructionsText: {
+    marginLeft: 10,
     fontSize: 14,
-    fontWeight: '500',
-    textAlign: 'center',
+    color: '#0A84D6',
+    flex: 1,
+  },
+  locationInfo: {
+    backgroundColor: 'white',
+    marginHorizontal: 25,
+    marginTop: 15,
+    padding: 15,
+    borderRadius: 15,
+    elevation: 3,
+  },
+  locationTitle: {
+    fontSize: 16,
+    fontWeight: 'bold',
+    color: '#333',
+    marginBottom: 5,
+  },
+  locationCoords: {
+    fontSize: 12,
+    color: '#666',
+    fontFamily: 'monospace',
   },
   footer: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
     paddingHorizontal: 30,
-    position: 'absolute',
-    bottom: 50,
-    width: '100%',
+    marginTop: 20,
+    marginBottom: 30,
   },
   voltarBtn: {
     backgroundColor: '#FF8A5B',
@@ -163,7 +213,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   criarPostBtn: {
-    backgroundColor: '#0078D7', // Azul do botão Criar Post
+    backgroundColor: '#0078D7',
     paddingVertical: 15,
     paddingHorizontal: 35,
     borderRadius: 30,
