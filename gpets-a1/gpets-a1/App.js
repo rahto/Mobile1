@@ -10,6 +10,9 @@ import CadastroPessoaScreen from "./CadastroPessoaScreen";
 import CadastroSucessoScreen from "./CadastroSucessoScreen";
 import LoginPessoaScreen from "./LoginPessoaScreen";
 import AddPostScreen from './AddPostScreen';
+import AddPostPetLocalizadoScreen from './AddPostPetLocalizadoScreen';
+import AddPostPetLocalizadoScreen2 from './AddPostPetLocalizadoScreen2';
+import AddPostPetLocalizadoScreen3 from './AddPostPetLocalizadoScreen3';
 
 // Dashboard principal
 import MainDashboard from "./MainDashboard";
@@ -89,10 +92,37 @@ export default function App() {
         />
 
         <Stack.Screen 
-  name="AddPost" 
-  component={AddPostScreen} 
-  options={{ headerShown: false }} 
-/>
+          name="AddPost" 
+          component={AddPostScreen} 
+          options={{ headerShown: false }} 
+        />
+
+        <Stack.Screen 
+          name="AddPostPetLocalizado" 
+          component={AddPostPetLocalizadoScreen} 
+          options={{ 
+            headerShown: false, // Remove o cabeçalho automático
+            animationEnabled: true // Garante uma transição suave
+          }} 
+        />
+
+        <Stack.Screen 
+          name="AddPostPetLocalizado2" 
+          component={AddPostPetLocalizadoScreen2} 
+          options={{ 
+            headerShown: false, // Remove o cabeçalho automático
+            animationEnabled: true // Garante uma transição suave
+          }} 
+        />
+
+        <Stack.Screen 
+          name="AddPostPetLocalizado3" 
+          component={AddPostPetLocalizadoScreen3} 
+          options={{ 
+            headerShown: false, // Remove o cabeçalho automático
+            animationEnabled: true // Garante uma transição suave
+          }} 
+        />
       </Stack.Navigator>
     </NavigationContainer>
   );

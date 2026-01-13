@@ -51,7 +51,7 @@ export default function AddPostScreen({ navigation }) {
         {/* Botões de Opção */}
         <TouchableOpacity 
           style={styles.optionButtonBlue}
-          onPress={() => console.log('Pet Localizado')}
+          onPress={() => navigation.navigate('AddPostPetLocalizado')} // Vai para o novo arquivo
         >
           <Text style={styles.optionButtonText}>Pet localizado</Text>
         </TouchableOpacity>
