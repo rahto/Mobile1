@@ -4,37 +4,61 @@ import {
   TouchableOpacity, SafeAreaView, StatusBar, Alert 
 } from 'react-native';
 import { Ionicons, MaterialIcons } from '@expo/vector-icons';
-import MapComponent from './MapComponent'; // Importe o componente
+import MapComponent from './MapComponent';
 
-export default function AddPostPetLocalizadoScreen3({ navigation }) {
+export default function AddPostPetLocalizadoScreen3({ navigation, route }) {
   const [selectedLocation, setSelectedLocation] = useState(null);
+  const [isLocationConfirmed, setIsLocationConfirmed] = useState(false);
+
+  // Pegar dados do pet das telas anteriores, se existirem
+  const petData = route?.params || {};
 
   const handleLocationSelect = (coordinate) => {
     setSelectedLocation(coordinate);
+    setIsLocationConfirmed(false);
     console.log('Localização selecionada:', coordinate);
   };
 
-  const handleCreatePost = () => {
-    if (!selectedLocation) {
-      Alert.alert('Atenção', 'Por favor, selecione uma localização no mapa.');
-      return;
-    }
+  const handleLocationConfirm = (coordinate) => {
+    setIsLocationConfirmed(true);
+    
+    // Criar objeto completo do post
+    const postCompleto = {
+      ...petData,
+      tipo: 'localizado',
+      localizacao: coordinate,
+      dataCriacao: new Date().toISOString(),
+      status: 'ativo'
+    };
 
-    Alert.alert(
-      'Confirmação',
-      `Deseja criar o post na localização selecionada?\nLat: ${selectedLocation.latitude.toFixed(4)}\nLon: ${selectedLocation.longitude.toFixed(4)}`,
-      [
-        { text: 'Cancelar', style: 'cancel' },
-        { 
-          text: 'Criar Post', 
-          onPress: () => {
-            // Aqui você enviaria os dados para a API
-            Alert.alert('Sucesso', 'Post criado com sucesso!');
-            navigation.navigate('MainDashboard');
-          }
+    console.log('Post criado automaticamente:', postCompleto);
+
+    // Navegar automaticamente para MainDashboard
+    navigation.reset({
+      index: 0,
+      routes: [{ 
+        name: 'MainDashboard',
+        params: { 
+          postCriado: true,
+          mensagem: '✅ Post de pet localizado criado com sucesso!',
+          postData: postCompleto,
+          timestamp: new Date().getTime()
         }
-      ]
-    );
+      }],
+    });
+  };
+
+  const handleLimparLocalizacao = () => {
+    Alert.alert('Limpar', 'Deseja limpar a localização selecionada?', [
+      { text: 'Cancelar', style: 'cancel' },
+      { 
+        text: 'Limpar', 
+        onPress: () => {
+          setSelectedLocation(null);
+          setIsLocationConfirmed(false);
+        }
+      }
+    ]);
   };
 
   return (
@@ -58,67 +82,52 @@ export default function AddPostPetLocalizadoScreen3({ navigation }) {
         <Text style={styles.headerTitle}>Pet localizado</Text>
         <TouchableOpacity 
           style={styles.trashBtn}
-          onPress={() => {
-            Alert.alert('Limpar', 'Deseja limpar todos os dados do formulário?', [
-              { text: 'Cancelar', style: 'cancel' },
-              { text: 'Limpar', onPress: () => setSelectedLocation(null) }
-            ]);
-          }}
+          onPress={handleLimparLocalizacao}
         >
           <Ionicons name="trash-outline" size={20} color="white" />
         </TouchableOpacity>
       </View>
 
-      {/* Instruções */}
+      {/* Instruções atualizadas */}
       <View style={styles.instructions}>
         <Ionicons name="information-circle" size={24} color="#0A84D6" />
         <Text style={styles.instructionsText}>
-          Toque no mapa para marcar onde o pet foi localizado
+          1. Toque no mapa para selecionar a localização{"\n"}
+          2. Clique em "Confirmar Localização" para finalizar
         </Text>
       </View>
 
-      {/* Componente de Mapa */}
+      {/* Componente de Mapa com botão de confirmação */}
       <MapComponent
         allowMarkerSelection={true}
         onLocationSelect={handleLocationSelect}
+        onLocationConfirm={handleLocationConfirm}
         selectedLocation={selectedLocation}
-        heightPercentage={0.6}
+        showConfirmButton={true}
+        heightPercentage={0.7} // Aumentei um pouco a altura
       />
 
-      {/* Informações da localização selecionada */}
-      {selectedLocation && (
-        <View style={styles.locationInfo}>
-          <Text style={styles.locationTitle}>Localização selecionada:</Text>
-          <Text style={styles.locationCoords}>
-            Lat: {selectedLocation.latitude.toFixed(6)}
-          </Text>
-          <Text style={styles.locationCoords}>
-            Lon: {selectedLocation.longitude.toFixed(6)}
+      {/* Status da Localização - SIMPLIFICADO */}
+      <View style={styles.statusContainer}>
+        <View style={styles.statusRow}>
+          <Ionicons 
+            name="information-circle" 
+            size={24} 
+            color="#0A84D6" 
+          />
+          <Text style={styles.statusText}>
+            Selecione uma localização e confirme para criar o post
           </Text>
         </View>
-      )}
-
-      {/* Footer */}
-      <View style={styles.footer}>
-        <TouchableOpacity 
-          style={styles.voltarBtn}
-          onPress={() => navigation.goBack()}
-        >
-          <Text style={styles.btnText}>Voltar</Text>
-        </TouchableOpacity>
-
-        <Text style={styles.stepIndicator}>3/3</Text>
-
-        <TouchableOpacity 
-          style={[
-            styles.criarPostBtn, 
-            !selectedLocation && { backgroundColor: '#CCCCCC' }
-          ]}
-          onPress={handleCreatePost}
-          disabled={!selectedLocation}
-        >
-          <Text style={styles.btnText}>Criar post</Text>
-        </TouchableOpacity>
+        
+        {selectedLocation && (
+          <View style={styles.selectedLocationBox}>
+            <Text style={styles.selectedLocationTitle}>📍 Local selecionado:</Text>
+            <Text style={styles.selectedLocationText}>
+              {selectedLocation.latitude.toFixed(6)}, {selectedLocation.longitude.toFixed(6)}
+            </Text>
+          </View>
+        )}
       </View>
     </SafeAreaView>
   );
@@ -176,58 +185,43 @@ const styles = StyleSheet.create({
     fontSize: 14,
     color: '#0A84D6',
     flex: 1,
+    lineHeight: 20,
   },
-  locationInfo: {
+  statusContainer: {
     backgroundColor: 'white',
     marginHorizontal: 25,
-    marginTop: 15,
+    marginTop: 20,
     padding: 15,
     borderRadius: 15,
     elevation: 3,
   },
-  locationTitle: {
-    fontSize: 16,
-    fontWeight: 'bold',
+  statusRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 15,
+  },
+  statusText: {
+    marginLeft: 10,
+    fontSize: 14,
     color: '#333',
+    flex: 1,
+  },
+  selectedLocationBox: {
+    backgroundColor: '#E8F5E9',
+    padding: 12,
+    borderRadius: 10,
+    borderWidth: 2,
+    borderColor: '#C8E6C9',
+  },
+  selectedLocationTitle: {
+    fontSize: 14,
+    fontWeight: 'bold',
+    color: '#2D4A27',
     marginBottom: 5,
   },
-  locationCoords: {
+  selectedLocationText: {
     fontSize: 12,
-    color: '#666',
+    color: '#555',
     fontFamily: 'monospace',
-  },
-  footer: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    paddingHorizontal: 30,
-    marginTop: 20,
-    marginBottom: 30,
-  },
-  voltarBtn: {
-    backgroundColor: '#FF8A5B',
-    paddingVertical: 15,
-    paddingHorizontal: 35,
-    borderRadius: 30,
-    minWidth: 120,
-    alignItems: 'center',
-  },
-  criarPostBtn: {
-    backgroundColor: '#0078D7',
-    paddingVertical: 15,
-    paddingHorizontal: 35,
-    borderRadius: 30,
-    minWidth: 120,
-    alignItems: 'center',
-  },
-  btnText: {
-    color: 'white',
-    fontWeight: 'bold',
-    fontSize: 16,
-  },
-  stepIndicator: {
-    fontSize: 16,
-    fontWeight: '500',
-    color: '#333',
   },
 });

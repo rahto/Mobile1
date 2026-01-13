@@ -19,11 +19,13 @@ const MapComponent = ({
   markers = [], 
   onMarkerPress = null,
   onLocationSelect = null,
+  onLocationConfirm = null, // NOVO: callback para confirmar localização
   showUserLocation = true,
   allowMarkerSelection = false,
   selectedLocation = null,
   mapType = "standard",
-  heightPercentage = 0.7
+  heightPercentage = 0.7,
+  showConfirmButton = false // NOVO: controla se mostra botão de confirmação
 }) => {
   const mapRef = useRef(null);
   const [region, setRegion] = useState(
@@ -38,6 +40,7 @@ const MapComponent = ({
   const [loading, setLoading] = useState(true);
   const [selectedMarker, setSelectedMarker] = useState(null);
   const [tempMarker, setTempMarker] = useState(selectedLocation);
+  const [isLocationSelected, setIsLocationSelected] = useState(false);
 
   // Solicitar permissão e obter localização do usuário
   useEffect(() => {
@@ -92,9 +95,20 @@ const MapComponent = ({
     if (allowMarkerSelection && onLocationSelect) {
       const { coordinate } = event.nativeEvent;
       setTempMarker(coordinate);
+      setIsLocationSelected(true);
       onLocationSelect(coordinate);
     }
   };
+
+  // Função para confirmar localização
+const handleConfirmLocation = () => {
+  if (tempMarker && onLocationConfirm) {
+    onLocationConfirm(tempMarker);
+    // APENAS chama o callback, SEM alerta
+  } else {
+    Alert.alert('Atenção', 'Selecione um local no mapa primeiro.');
+  }
+};
 
   // Função para lidar com pressão no marcador
   const handleMarkerPress = (marker) => {
@@ -107,7 +121,7 @@ const MapComponent = ({
   // Renderizar marcadores personalizados
   const renderMarker = (marker) => {
     let iconName = 'paw';
-    let color = '#0A84D6'; // Azul padrão para pet localizado
+    let color = '#0A84D6'; // AZUL para pet localizado
     
     if (marker.type === 'perdido') {
       iconName = 'alert-circle';
@@ -118,6 +132,9 @@ const MapComponent = ({
     } else if (marker.type === 'user') {
       iconName = 'person';
       color = '#74C37E'; // Verde para usuário
+    } else if (marker.type === 'encontrado') {
+      iconName = 'paw';
+      color = '#0A84D6'; // AZUL para pet encontrado/localizado
     }
 
     return (
@@ -127,7 +144,6 @@ const MapComponent = ({
         title={marker.title}
         description={marker.description}
         onPress={() => handleMarkerPress(marker)}
-        pinColor={color}
       >
         <View style={[styles.customMarker, { backgroundColor: color }]}>
           <Ionicons name={iconName} size={20} color="white" />
@@ -233,6 +249,21 @@ const MapComponent = ({
         </TouchableOpacity>
       </View>
 
+      {/* Botão de Confirmar Localização (aparece apenas quando showConfirmButton=true) */}
+      {showConfirmButton && allowMarkerSelection && (
+        <TouchableOpacity 
+          style={[
+            styles.confirmButton,
+            !isLocationSelected && styles.confirmButtonDisabled
+          ]}
+          onPress={handleConfirmLocation}
+          disabled={!isLocationSelected}
+        >
+          <Ionicons name="checkmark-circle" size={20} color="white" />
+          <Text style={styles.confirmButtonText}>Confirmar Localização</Text>
+        </TouchableOpacity>
+      )}
+
       {/* Legenda */}
       <View style={styles.legend}>
         <View style={styles.legendItem}>
@@ -288,6 +319,33 @@ const styles = StyleSheet.create({
     marginVertical: 5,
     elevation: 3,
   },
+  confirmButton: {
+    position: 'absolute',
+    bottom: 80,
+    left: 20,
+    right: 20,
+    backgroundColor: '#74C37E',
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingVertical: 12,
+    paddingHorizontal: 20,
+    borderRadius: 25,
+    elevation: 5,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.25,
+    shadowRadius: 3.84,
+  },
+  confirmButtonDisabled: {
+    backgroundColor: '#CCCCCC',
+  },
+  confirmButtonText: {
+    color: 'white',
+    fontSize: 16,
+    fontWeight: 'bold',
+    marginLeft: 8,
+  },
   legend: {
     position: 'absolute',
     bottom: 15,
@@ -330,7 +388,7 @@ const styles = StyleSheet.create({
     shadowRadius: 3.84,
   },
   selectedMarker: {
-    backgroundColor: '#74C37E',
+    backgroundColor: '#0A84D6',
     width: 48,
     height: 48,
     borderRadius: 24,
