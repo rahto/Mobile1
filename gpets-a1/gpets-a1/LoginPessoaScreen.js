@@ -156,7 +156,7 @@ export default function LoginPessoaScreen({ navigation }) {
 
           {/* Botão de Login */}
           <TouchableOpacity
-            style={[styles.btnAction, { marginTop: 30 }]}
+            style={[styles.btnAction, { marginTop: 30 }, {marginLeft: 64}]}
             onPress={handleLogin}
           >
             <Text style={styles.btnText}>{"Entrar"}</Text>

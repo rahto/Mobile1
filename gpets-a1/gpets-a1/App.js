@@ -13,6 +13,9 @@ import AddPostScreen from './AddPostScreen';
 import AddPostPetLocalizadoScreen from './AddPostPetLocalizadoScreen';
 import AddPostPetLocalizadoScreen2 from './AddPostPetLocalizadoScreen2';
 import AddPostPetLocalizadoScreen3 from './AddPostPetLocalizadoScreen3';
+import AddPostPetPerdidoScreen from './AddPostPetPerdidoScreen';
+import AddPostPetPerdidoScreen2 from './AddPostPetPerdidoScreen2';
+import AddPostPetPerdidoScreen3 from './AddPostPetPerdidoScreen3';
 
 // Dashboard principal
 import MainDashboard from "./MainDashboard";
@@ -118,6 +121,33 @@ export default function App() {
         <Stack.Screen 
           name="AddPostPetLocalizado3" 
           component={AddPostPetLocalizadoScreen3} 
+          options={{ 
+            headerShown: false, // Remove o cabeçalho automático
+            animationEnabled: true // Garante uma transição suave
+          }} 
+        />
+
+        <Stack.Screen 
+          name="AddPostPetPerdidoScreen" 
+          component={AddPostPetPerdidoScreen} 
+          options={{ 
+            headerShown: false, // Remove o cabeçalho automático
+            animationEnabled: true // Garante uma transição suave
+          }} 
+        />
+
+        <Stack.Screen 
+          name="AddPostPetPerdidoScreen2" 
+          component={AddPostPetPerdidoScreen2} 
+          options={{ 
+            headerShown: false, // Remove o cabeçalho automático
+            animationEnabled: true // Garante uma transição suave
+          }} 
+        />
+
+        <Stack.Screen 
+          name="AddPostPetPerdidoScreen3" 
+          component={AddPostPetPerdidoScreen3} 
           options={{ 
             headerShown: false, // Remove o cabeçalho automático
             animationEnabled: true // Garante uma transição suave

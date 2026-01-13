@@ -58,9 +58,9 @@ export default function AddPostScreen({ navigation }) {
 
         <TouchableOpacity 
           style={styles.optionButtonRed}
-          onPress={() => console.log('Pet perdido')}
+          onPress={() => navigation.navigate('AddPostPetPerdidoScreen')} // Vai para o novo arquivo
         >
-          <Text style={styles.optionButtonText}>Pet perdido</Text>
+          <Text style={styles.optionButtonText}>Pet Perdido</Text>
         </TouchableOpacity>
       </View>
 

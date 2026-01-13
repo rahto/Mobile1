@@ -14,16 +14,16 @@ export default function HomeScreen({ navigation }) {
   return (
     <SafeAreaView style={styles.container}>
       <ScrollView contentContainerStyle={styles.centerContent}>
-        <View style={{ alignItems: "center", marginBottom: 49 }}>
+        <View style={{ alignItems: "center", marginBottom: 140 }}>
           <Image
-            source={{ uri: "https://storage.googleapis.com/tagjs-prod.appspot.com/v1/jURUpFj1d0/e0durvln_expires_30_days.png" }}
-            style={{ width: 179, height: 70, marginBottom: 24 }}
+            source={require('./assets/logobranco.png')} 
+            style={{ width: 179, height: 70, marginBottom: 100 }}
             resizeMode="stretch"
           />
           <Text style={styles.welcomeText}>{"Bem vindo!"}</Text>
         </View>
 
-        <View style={{ alignItems: "center", marginBottom: 50 }}>
+        <View style={{ alignItems: "center", marginBottom: 80 }}>
           <TouchableOpacity
             style={styles.btnPrimary}
             onPress={() => navigation.navigate("Cadastro")}
