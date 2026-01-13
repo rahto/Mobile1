@@ -1,4 +1,6 @@
-import React, { useState } from 'react'; 
+import React, { useEffect, useState } from 'react'; 
+import { collection, query, orderBy, onSnapshot } from "firebase/firestore";
+import { db } from "./src/services/firebase";
 import { 
   StyleSheet, View, Text, Image, ScrollView, 
   TouchableOpacity, SafeAreaView, StatusBar, Dimensions 
@@ -70,49 +72,90 @@ const SideMenu = ({ onClose, onNavigate, currentScreen, onNewPost }) => (
 );
 
 // --- COMPONENTE: TELA DE FEED ---
-const FeedView = () => (
-  <ScrollView contentContainerStyle={{ paddingBottom: 120 }}>
-    {[1, 2, 3].map((id) => (
-      <View key={id} style={styles.feedCard}>
-        <View style={styles.cardHeader}>
-          <View style={styles.userRow}>
-            <View style={styles.avatarCircle}><Text style={styles.avatarInitial}>A</Text></View>
-            <View>
-              <Text style={styles.userName}>Alex Silva</Text>
-              <Text style={styles.userStatus}>Cachorro perdido</Text>
+const FeedView = () => {
+  const [posts, setPosts] = useState([]);
+
+  useEffect(() => {
+    const q = query(collection(db, "posts"), orderBy("date", "desc"));
+    const unsub = onSnapshot(q, snapshot => {
+      const data = snapshot.docs.map(doc => ({
+        id: doc.id,
+        ...doc.data()
+      }));
+      setPosts(data);
+    });
+
+    return () => unsub();
+  }, []);
+
+  const openMap = (city) => {
+    alert(`Abrir mapa da cidade: ${city}`);
+  };
+
+  const sharePost = (post) => {
+    alert(`Compartilhar: ${post.userName} - ${post.petStatus}`);
+  };
+
+  return (
+    <ScrollView contentContainerStyle={{ paddingBottom: 120 }}>
+      {posts.map(post => (
+        <View key={post.id} style={styles.feedCard}>
+          
+          <View style={styles.cardHeader}>
+            <View style={styles.userRow}>
+              <View style={styles.avatarCircle}>
+                <Text style={styles.avatarInitial}>
+                  {post.userName?.charAt(0)}
+                </Text>
+              </View>
+              <View>
+                <Text style={styles.userName}>{post.userName}</Text>
+                <Text style={styles.userStatus}>{post.petStatus}</Text>
+              </View>
             </View>
           </View>
-          <MaterialIcons name="more-vert" size={24} color="#666" />
-        </View>
-        
-        <View style={styles.imageWrapper}>
-          <Image source={{ uri: `https://placedog.net/500/300?id=${id + 10}` }} style={styles.petImage} />
-          {id === 2 && (
-            <TouchableOpacity style={styles.eyeOverlay}>
-              <Ionicons name="eye-outline" size={24} color="white" />
-            </TouchableOpacity>
-          )}
-        </View>
 
-        <View style={styles.cardContent}>
-          <Text style={styles.locationTitle}>Quixadá</Text>
-          <Text style={styles.dateLabel}>14/10/2025</Text>
-          <Text style={styles.descriptionText}>
-            Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor...
-          </Text>
-          <View style={styles.actionButtons}>
-            <TouchableOpacity style={styles.btnShare}>
-              <Text style={styles.txtShare}>Compartilhar</Text>
-            </TouchableOpacity>
-            <TouchableOpacity style={styles.btnGoMap}>
-              <Text style={styles.txtGoMap}>ir para mapa</Text>
-            </TouchableOpacity>
+          <View style={styles.imageWrapper}>
+            <Image source={{ uri: post.imageUrl }} style={styles.petImage} />
           </View>
+
+          <View style={styles.cardContent}>
+            <Text style={styles.locationTitle}>{post.city}</Text>
+            <Text style={styles.dateLabel}>
+              {post.date?.seconds
+                ? new Date(post.date.seconds * 1000).toLocaleDateString()
+                : ""}
+            </Text>
+            <Text style={styles.descriptionText}>{post.description}</Text>
+
+            {/* Barra de ações */}
+            <View style={styles.actionButtons}>
+              
+              <TouchableOpacity 
+                style={styles.btnShare}
+                onPress={() => sharePost(post)}
+              >
+                <Text style={styles.txtShare}>Compartilhar</Text>
+              </TouchableOpacity>
+
+              <TouchableOpacity 
+                style={styles.btnGoMap}
+                onPress={() => openMap(post.city)}
+              >
+                <Text style={styles.txtGoMap}>Ir para o mapa</Text>
+              </TouchableOpacity>
+
+            </View>
+          </View>
+
         </View>
-      </View>
-    ))}
-  </ScrollView>
-);
+      ))}
+    </ScrollView>
+  );
+};
+
+
+
 
 // --- COMPONENTE: TELA DE MAPA ---
 const MapaView = () => (
