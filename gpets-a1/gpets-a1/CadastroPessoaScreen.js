@@ -90,7 +90,7 @@ export default function CadastroPessoaScreen({ navigation }) {
           />
 
           <TouchableOpacity
-            style={[styles.btnAction, { marginTop: 30 }]}
+            style={[styles.btnAction, { marginTop: 30 }, {marginLeft: 120}]}
             onPress={handleCadastro}
           >
             <Text style={styles.btnText}>{"Confirmar"}</Text>

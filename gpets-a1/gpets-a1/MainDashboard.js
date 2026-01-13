@@ -8,7 +8,7 @@ import { MaterialIcons, Ionicons, Feather } from '@expo/vector-icons';
 const { width } = Dimensions.get('window');
 
 // --- COMPONENTE: MENU LATERAL ---
-const SideMenu = ({ onClose, onNavigate, currentScreen }) => (
+const SideMenu = ({ onClose, onNavigate, currentScreen, onNewPost }) => (
   <View style={styles.overlay}>
     <SafeAreaView style={styles.menuContainer}>
       <TouchableOpacity style={styles.closeBtn} onPress={onClose}>
@@ -56,10 +56,14 @@ const SideMenu = ({ onClose, onNavigate, currentScreen }) => (
         </TouchableOpacity>
       </View>
 
-      <TouchableOpacity style={styles.newPostBtnMenu}>
+      <TouchableOpacity 
+        style={styles.newPostBtnMenu} 
+        onPress={onNewPost}
+      >
         <Ionicons name="add" size={20} color="white" />
         <Text style={styles.newPostText}>Nova Publicação</Text>
       </TouchableOpacity>
+      
     </SafeAreaView>
     <TouchableOpacity style={{ flex: 1 }} onPress={onClose} />
   </View>
@@ -177,6 +181,10 @@ export default function MainDashboard({ navigation }) {
     setMenuOpen(false);
   };
 
+  const handleNewPost = () => {
+    setMenuOpen(false); // Fecha o menu lateral
+    navigation.navigate('AddPost'); // Navega para a tela de postagem
+  };
   // Função para sair/logout
   const handleLogout = () => {
     // Fechar menu primeiro
@@ -196,6 +204,7 @@ export default function MainDashboard({ navigation }) {
           onClose={() => setMenuOpen(false)} 
           onNavigate={handleNavigate} 
           currentScreen={screen} 
+          onNewPost={handleNewPost}
         />
       )}
 

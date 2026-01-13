@@ -22,17 +22,17 @@ export default function CadastroScreen({ navigation }) {
           resizeMode="stretch"
         />
 
-        <Text style={styles.title}>{"BEM VINDO AO GPETS!"}</Text>
-        <Text style={styles.subtitle}>{"Escolha a forma de cadastro:"}</Text>
+        <Text style={[styles.title, { marginTop: 100 }]}>{"BEM VINDO AO GPETS!"}</Text>
+        <Text style={[styles.subtitle, { marginTop: 0 }]}>{"Escolha a forma de cadastro:"}</Text>
 
         <TouchableOpacity 
-          style={styles.btnAction}
+          style={[styles.btnAction, { marginTop: 50 }]} // Adiciona 20 de margem superior
           onPress={() => navigation.navigate("CadastroPessoa")}
         >
           <Text style={styles.btnText}>{"Pessoa Física"}</Text>
         </TouchableOpacity>
 
-        <TouchableOpacity style={styles.btnGray}>
+        <TouchableOpacity style={[styles.btnGray, { marginTop: 0 }]}>
           <Text style={styles.btnText}>{"ONG"}</Text>
         </TouchableOpacity>
       </ScrollView>
